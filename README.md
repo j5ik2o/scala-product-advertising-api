@@ -9,7 +9,7 @@ Add the following to your sbt build (Scala 2.10.x, and Scala 2.11.x, and Scala 2
 ```scala
 resolvers += "Sonatype OSS Release Repository" at "https://oss.sonatype.org/content/repositories/releases/"
 
-libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api" % "1.0.0"
+libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.0"
 ```
 
 ### Snapshot Version
@@ -17,5 +17,5 @@ libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api" % 
 ```scala
 resolvers += "Sonatype OSS Snapshot Repository" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-libraryDependencies += "org.sisioh" %% "scala-product-advertising-api" % "1.0.1-SNAPSHOT"
+libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.1-SNAPSHOT"
 ```
