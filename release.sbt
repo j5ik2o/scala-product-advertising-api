@@ -26,11 +26,7 @@ val updateReadme = { state: State =>
   val org = extracted get organization
   val n = extracted get name
   val readmeFiles = Seq(
-    "README.md",
-    "sbt-aws-cfn/README.md",
-    "sbt-aws-eb/README.md",
-    "sbt-aws-s3/README.md",
-    "sbt-aws-s3-resolver/README.md"
+    "README.md"
   )
   readmeFiles.foreach(readme => updateReadmeFile(v, readme))
   readmeFiles.foreach { readme =>
@@ -43,8 +39,6 @@ val updateReadme = { state: State =>
 
 commands += Command.command("updateReadme")(updateReadme)
 
-val updateReadmeProcess: ReleaseStep = updateReadme
-
 releaseCrossBuild := true
 
 releaseProcess := Seq[ReleaseStep](
@@ -53,14 +47,15 @@ releaseProcess := Seq[ReleaseStep](
   runClean,
   setReleaseVersion,
   commitReleaseVersion,
-  updateReadmeProcess,
+  ReleaseStep(
+    action = updateReadme
+  ),
   tagRelease,
   ReleaseStep(
     action = { state =>
       val extracted = Project extract state
       extracted.runAggregated(PgpKeys.publishSigned in Global in extracted.get(thisProjectRef), state)
-    },
-    enableCrossBuild = true
+    }
   ),
   setNextVersion,
   commitNextVersion,
