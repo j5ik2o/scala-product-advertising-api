@@ -4,14 +4,14 @@ This product is Scala library for Amazon Product Advertising API.
 
 ## Installation
 
-Add the following to your sbt build (Scala 2.10.x, and Scala 2.11.x, and Scala 2.12.x):
+Add the following to your sbt build (only Scala 2.11.x):
 
 ### Release Version
 
 ```scala
 resolvers += "Sonatype OSS Release Repository" at "https://oss.sonatype.org/content/repositories/releases/"
 
-libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.0"
+libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.2"
 ```
 
 ### Snapshot Version
@@ -19,7 +19,7 @@ libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-cor
 ```scala
 resolvers += "Sonatype OSS Snapshot Repository" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.1-SNAPSHOT"
+libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-core" % "1.0.3-SNAPSHOT"
 ```
 
 ## Usage
