@@ -5,6 +5,7 @@ import akka.testkit.TestKit
 import org.scalatest.FunSpecLike
 import org.scalatest.concurrent.ScalaFutures
 import webservices.amazon.com.AWSECommerceService.n20110801.ItemSearchRequest
+import scala.concurrent.duration._
 
 class ProductAdvertisingAPITest
   extends TestKit(ActorSystem("ProductAdvertisingAPITest"))
@@ -15,7 +16,8 @@ class ProductAdvertisingAPITest
       val config = ProductAdvertisingConfig(
         endPoint = "webservices.amazon.co.jp",
         awsAccessKeyId = sys.env("AWS_ACCESS_KEY_ID"),
-        awsSecretAccessKey = sys.env("AWS_SECRET_ACCESS_KEY")
+        awsSecretAccessKey = sys.env("AWS_SECRET_ACCESS_KEY"),
+        10 seconds
       )
       val api = new ProductAdvertisingAPI(config)
       val request = ItemSearchRequest(SearchIndex = Some("PCHardware"), Keywords = Some("macbook"), ResponseGroup = Seq("Images", "ItemAttributes", "Offers"), Sort = Some("price"))

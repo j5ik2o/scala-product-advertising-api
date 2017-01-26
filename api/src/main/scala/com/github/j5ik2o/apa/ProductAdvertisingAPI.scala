@@ -51,7 +51,7 @@ class ProductAdvertisingAPI(config: ProductAdvertisingConfig)(implicit system: A
   import ProductAdvertisingAPI._
   import webservices.amazon.com.AWSECommerceService.n20110801._
 
-  implicit val materializer = ActorMaterializer()
+  private implicit val materializer = ActorMaterializer()
 
   private val poolClientFlow = Http().cachedHostConnectionPool[Int](config.endPoint)
 
@@ -61,7 +61,7 @@ class ProductAdvertisingAPI(config: ProductAdvertisingConfig)(implicit system: A
     config.awsSecretAccessKey
   )
 
-  private val timeout: FiniteDuration = 10.seconds
+  private val timeout: FiniteDuration = config.timeoutForToStrict
 
   def itemSearch(
     request: ItemSearchRequest,
