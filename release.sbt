@@ -8,7 +8,7 @@ def updateReadmeFile(version: String, readme: String): Unit = {
   val readmeFile = file(readme)
   val newReadme = Predef.augmentString(IO.read(readmeFile)).lines.map { line =>
     val matchReleaseOrSnapshot = line.contains("SNAPSHOT") == version.contains("SNAPSHOT")
-    if (line.startsWith("addSbtPlugin") && matchReleaseOrSnapshot) {
+    if (line.startsWith("libraryDependencies") && matchReleaseOrSnapshot) {
       println(s"matchReleaseOrSnapshot = $matchReleaseOrSnapshot")
       val regex = """\d{1,2}\.\d{1,2}\.\d{1,2}""".r
       regex.replaceFirstIn(line, version)
