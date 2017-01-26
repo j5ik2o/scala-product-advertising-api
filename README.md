@@ -25,12 +25,15 @@ libraryDependencies += "com.github.j5ik2o" %% "scala-product-advertising-api-cor
 ## Usage
 
 ```scala
+import scala.concurrent.duration._
+
 implicit val system = ActorSytem()
 
 val config = ProductAdvertisingConfig(
-endPoint = "webservices.amazon.co.jp",
-awsAccessKeyId = ???, // set your awsAccessKeyId
-awsSecretAccessKey = ??? // set your  awsSecretKey
+  endPoint = "webservices.amazon.co.jp",
+  awsAccessKeyId = ???, // set your awsAccessKeyId
+  awsSecretAccessKey = ??? // set your  awsSecretKey
+  timeoutForToStrict = 10 seconds
 )
 
 val productAdvertisingAPI = new ProductAdvertisingAPI(config)
