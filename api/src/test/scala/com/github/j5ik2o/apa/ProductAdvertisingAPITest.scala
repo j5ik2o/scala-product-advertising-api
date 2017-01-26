@@ -25,9 +25,9 @@ class ProductAdvertisingAPITest
       val r = f.futureValue
       r.Items.foreach { items4 =>
         items4.Item.foreach { item4 =>
-          println(item4.ASIN, item4.Offers)
+          println((item4.ASIN, item4.Offers))
           item4.ItemAttributes.foreach { itemAttribute =>
-            println(itemAttribute.Title, itemAttribute.Size)
+            println((itemAttribute.Title, itemAttribute.Size))
           }
         }
       }
