@@ -1,0 +1,1 @@
+# scala-product-advertising-api
