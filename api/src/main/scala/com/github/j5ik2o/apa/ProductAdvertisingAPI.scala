@@ -6,10 +6,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.scaladsl.{ Sink, Source }
 import com.amazon.advertising.api.sample.SignedRequestsHelper
 import shapeless.ops.record.ToMap
-import shapeless.{HList, LabelledGeneric}
+import shapeless.{ HList, LabelledGeneric }
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -25,9 +25,8 @@ object ProductAdvertisingAPI {
     import ops.record._
 
     def toMap[L <: HList](implicit
-                          gen: LabelledGeneric.Aux[A, L],
-                          tmr: ToMap[L]
-                         ): Map[String, String] = {
+      gen: LabelledGeneric.Aux[A, L],
+      tmr: ToMap[L]): Map[String, String] = {
       val m: Map[tmr.Key, tmr.Value] = tmr(gen.to(a))
       m.filterNot {
         case (_: Symbol, v: Option[_]) => v == None
@@ -60,219 +59,235 @@ class ProductAdvertisingAPI(config: ProductAdvertisingConfig)(implicit system: A
 
   private val timeout: FiniteDuration = 10.seconds
 
-  def itemSearch(request: ItemSearchRequest,
-                 associateTag: Option[String] = None,
-                 xmlEscaping: Option[String] = None,
-                 validate: Option[String] = None
-                ): Future[ItemSearchResponse] = {
+  def itemSearch(
+    request: ItemSearchRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[ItemSearchResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[ItemSearchResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[ItemSearchResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def itemLookup(request: ItemLookupRequest,
-                 associateTag: Option[String] = None,
-                 xmlEscaping: Option[String] = None,
-                 validate: Option[String] = None
-                ): Future[ItemLookupResponse] = {
+  def itemLookup(
+    request: ItemLookupRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[ItemLookupResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[ItemLookupResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[ItemLookupResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def browseNodeLookup(request: BrowseNodeLookupRequest,
-                       associateTag: Option[String] = None,
-                       xmlEscaping: Option[String] = None,
-                       validate: Option[String] = None
-                      ): Future[BrowseNodeLookupResponse] = {
+  def browseNodeLookup(
+    request: BrowseNodeLookupRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[BrowseNodeLookupResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[BrowseNodeLookupResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[BrowseNodeLookupResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def similarityLookup(request: SimilarityLookupRequest,
-                       associateTag: Option[String] = None,
-                       xmlEscaping: Option[String] = None,
-                       validate: Option[String] = None
-                      ): Future[SimilarityLookupResponse] = {
+  def similarityLookup(
+    request: SimilarityLookupRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[SimilarityLookupResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[SimilarityLookupResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[SimilarityLookupResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def cartCreate(request: CartCreateRequest,
-                 associateTag: Option[String] = None,
-                 xmlEscaping: Option[String] = None,
-                 validate: Option[String] = None
-                ): Future[CartCreateResponse] = {
+  def cartCreate(
+    request: CartCreateRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[CartCreateResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[CartCreateResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[CartCreateResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def cartGet(request: CartGetRequest,
-              associateTag: Option[String] = None,
-              xmlEscaping: Option[String] = None,
-              validate: Option[String] = None
-             ): Future[CartGetResponse] = {
+  def cartGet(
+    request: CartGetRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[CartGetResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[CartGetResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[CartGetResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def cartAdd(request: CartAddRequest,
-              associateTag: Option[String] = None,
-              xmlEscaping: Option[String] = None,
-              validate: Option[String] = None
-             ): Future[CartAddResponse] = {
+  def cartAdd(
+    request: CartAddRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[CartAddResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[CartAddResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[CartAddResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def cartModify(request: CartModifyRequest,
-                 associateTag: Option[String] = None,
-                 xmlEscaping: Option[String] = None,
-                 validate: Option[String] = None
-                ): Future[CartModifyResponse] = {
+  def cartModify(
+    request: CartModifyRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[CartModifyResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[CartModifyResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[CartModifyResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
-  def cartClear(request: CartClearRequest,
-                associateTag: Option[String] = None,
-                xmlEscaping: Option[String] = None,
-                validate: Option[String] = None
-               ): Future[CartClearResponse] = {
+  def cartClear(
+    request: CartClearRequest,
+    associateTag: Option[String] = None,
+    xmlEscaping: Option[String] = None,
+    validate: Option[String] = None
+  ): Future[CartClearResponse] = {
     val name = request.getClass.getSimpleName.split("Request")(0)
     val params = getParams(name, request, associateTag, xmlEscaping, validate)
     val url = signedRequestsHelper.sign(params)
     val future = Source.single(HttpRequest(uri = url) -> 1).via(poolClientFlow).runWith(Sink.head)
-    future.flatMap { case (triedResponse, _) =>
-      triedResponse.map { response =>
-        response.entity.toStrict(timeout).map {
-          _.data
-        }.map(_.utf8String).map { s =>
-          scalaxb.fromXML[CartClearResponse](XML.loadString(s))
-        }.recoverWith {
-          case ex: scalaxb.ParserFailure =>
-            Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
-        }
-      }.get
+    future.flatMap {
+      case (triedResponse, _) =>
+        triedResponse.map { response =>
+          response.entity.toStrict(timeout).map {
+            _.data
+          }.map(_.utf8String).map { s =>
+            scalaxb.fromXML[CartClearResponse](XML.loadString(s))
+          }.recoverWith {
+            case ex: scalaxb.ParserFailure =>
+              Future.failed(ProductAdvertisingAPIException("Occurred Error", ex))
+          }
+        }.get
     }
   }
 
   private def getParams[A, L <: HList](operation: String, request: A,
-                                       associateTag: Option[String],
-                                       xmlEscaping: Option[String],
-                                       validate: Option[String]
-                                      )
-                                      (implicit gen: LabelledGeneric.Aux[A, L], tmr: ToMap[L]): util.HashMap[String, String] = {
+    associateTag: Option[String],
+    xmlEscaping: Option[String],
+    validate: Option[String])(implicit gen: LabelledGeneric.Aux[A, L], tmr: ToMap[L]): util.HashMap[String, String] = {
     val params = new util.HashMap[String, String]()
     val defaultMap = Map(
       "Service" -> "AWSECommerceService",
