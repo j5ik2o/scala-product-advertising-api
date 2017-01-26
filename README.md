@@ -1,6 +1,6 @@
 # scala-product-advertising-api
 
-This product is Scala library for Amazon Product Advertising API. 
+This product is a Scala library for Amazon Product Advertising API. 
 
 ## Installation
 
