@@ -55,7 +55,11 @@ class ProductAdvertisingAPI(config: ProductAdvertisingConfig)(implicit system: A
 
   private val poolClientFlow = Http().cachedHostConnectionPool[Int](config.endPoint)
 
-  private val signedRequestsHelper = SignedRequestsHelper.getInstance(config.endPoint, config.awsAccessKey, config.awsSecretKey)
+  private val signedRequestsHelper = SignedRequestsHelper.getInstance(
+    config.endPoint,
+    config.awsAccessKeyId,
+    config.awsSecretAccessKey
+  )
 
   private val timeout: FiniteDuration = 10.seconds
 

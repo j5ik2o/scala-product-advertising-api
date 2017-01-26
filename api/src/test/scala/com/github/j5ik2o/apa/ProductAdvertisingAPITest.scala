@@ -3,24 +3,24 @@ package com.github.j5ik2o.apa
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import org.scalatest.FunSpecLike
+import org.scalatest.concurrent.ScalaFutures
 import webservices.amazon.com.AWSECommerceService.n20110801.ItemSearchRequest
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
-class ProductAdvertisingAPITest extends TestKit(ActorSystem("ProductAdvertisingAPITest")) with FunSpecLike {
+class ProductAdvertisingAPITest
+  extends TestKit(ActorSystem("ProductAdvertisingAPITest"))
+    with FunSpecLike with ScalaFutures {
 
   describe("ProductAdvertisingAPI") {
-    it("should be able to get result") {
+    it("should be able to get response") {
       val config = ProductAdvertisingConfig(
-        "webservices.amazon.co.jp",
-        "AKIAINIBFHW3V2SFIUIQ",
-        "aZG8NO/wGC3HqFVUuPXI4dy9xt0uIM+myK6D/JTE"
+        endPoint = "webservices.amazon.co.jp",
+        awsAccessKeyId = sys.env("AWS_ACCESS_KEY_ID"),
+        awsSecretAccessKey = sys.env("AWS_SECRET_ACCESS_KEY")
       )
       val api = new ProductAdvertisingAPI(config)
       val request = ItemSearchRequest(SearchIndex = Some("PCHardware"), Keywords = Some("macbook"), ResponseGroup = Seq("Images", "ItemAttributes", "Offers"), Sort = Some("price"))
       val f = api.itemSearch(request, Some("hatenaj5ik2o-22"))
-      val r = Await.result(f, Duration.Inf)
+      val r = f.futureValue
       r.Items.foreach { items4 =>
         items4.Item.foreach { item4 =>
           println(item4.ASIN, item4.Offers)
@@ -30,8 +30,6 @@ class ProductAdvertisingAPITest extends TestKit(ActorSystem("ProductAdvertisingA
         }
       }
       println(r)
-    }
-    it("test") {
     }
   }
 }
