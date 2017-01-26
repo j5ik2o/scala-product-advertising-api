@@ -19,9 +19,9 @@ val coreSettings = Seq(
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:j5ik2o/scala-product-adverting-api.git</url>
-        <connection>scm:git:github.com/j5ik2o/scala-product-adverting-api</connection>
-        <developerConnection>scm:git:git@github.com:j5ik2o/scala-adverting-api.git</developerConnection>
+        <url>git@github.com:j5ik2o/scala-product-advertising-api.git</url>
+        <connection>scm:git:github.com/j5ik2o/scala-product-advertising-api-api</connection>
+        <developerConnection>scm:git:git@github.com:j5ik2o/scala-product-advertising-api.git</developerConnection>
       </scm>
       <developers>
         <developer>
